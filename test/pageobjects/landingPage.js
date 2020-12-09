@@ -1,4 +1,5 @@
 import Page from "./page";
+import { expectedListItems } from "../data/landing-list-items";
 
 class LandingPage extends Page {
   /**
@@ -21,6 +22,14 @@ class LandingPage extends Page {
   }
   get listItems() {
     return this.list.$$("li");
+  }
+
+  listItem(index) {
+    return $(`ul li:nth-child(${index})`); 
+  } 
+
+ get listLinks() {
+    return $$(`ul li a`);
   }
 
   /**
@@ -47,6 +56,22 @@ class LandingPage extends Page {
 
   getFooterLink() {
     return this.footerLink.getAttribute("href");
+  }
+
+  getListItemText(index){
+    return this.listItem(index).getText();
+  }
+
+  verifyListItemsText(){
+    let actualListItemsText = this.listItems.map(item=>item.getText());
+    return this.listItems.length === expectedListItems.length && 
+      actualListItemsText.every((itemText,index)=>itemText === expectedListItems[index][1]); 
+  }
+
+  verifyListItemLinks(){
+    let actualListItemsLinks = this.listLinks.map(link=>link.getAttribute('href'));
+    return this.listLinks.length === expectedListItems.length && 
+      actualListItemsLinks.every((linkItem, index)=> {  return linkItem === browser.options.baseUrl.slice(0,-1)+expectedListItems[index][0]}); 
   }
 }
 

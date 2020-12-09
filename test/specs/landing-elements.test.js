@@ -39,4 +39,13 @@ describe("Testing the herokuapp landing page", () => {
       "There should be 44 list items"
     ).to.equal(44);
   });
+
+  it("should verify list item link text",()=>{
+    expect(landingPage.verifyListItemsText(),"All List Item text should match expected list items").to.be.true;
+  });
+
+  it.only('should verify the links in the list are active',()=>{
+    expect(landingPage.verifyListItemLinks()).to.be.true;
+  });
+
 });
