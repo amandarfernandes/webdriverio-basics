@@ -44,7 +44,7 @@ describe("Testing the herokuapp landing page", () => {
     expect(landingPage.verifyListItemsText(),"All List Item text should match expected list items").to.be.true;
   });
 
-  it.only('should verify the links in the list are active',()=>{
+  it('should verify the links in the list are active',()=>{
     expect(landingPage.verifyListItemLinks()).to.be.true;
   });
 

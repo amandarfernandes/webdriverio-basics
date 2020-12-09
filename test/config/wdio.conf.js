@@ -142,7 +142,14 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter.html
-    reporters: ['spec','dot'],
+    reporters: ['spec','dot',
+    ['junit', {
+        outputDir: './reports/junit-results/',
+        outputFileFormat: function(options) { // optional
+                return `wdio-junit-${options.cid}.${options.capabilities.browserName}-report.xml`
+            }
+    }]
+    ],
 
 
     
