@@ -148,6 +148,11 @@ exports.config = {
         outputFileFormat: function(options) { // optional
                 return `wdio-junit-${options.cid}.${options.capabilities.browserName}-report.xml`
             }
+    }],['json',{
+        outputDir: './reports/json-results/',
+        outputFileFormat: function(opts) { 
+            return `wdio-json-${opts.cid}.${opts.capabilities.browserName}-report.json`
+        }
     }]
     ],
 
