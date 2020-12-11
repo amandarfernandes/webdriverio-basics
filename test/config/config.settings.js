@@ -1,7 +1,7 @@
 module.exports={
     browserName:'chrome',
     timeout:10000,
-    logLevel: 'info',
+    logLevel: 'error',
     baseUrl: 'https://the-internet.herokuapp.com/',
     drivers: {
         chrome: { version: '87.0.4280.88' }, // https://chromedriver.chromium.org/

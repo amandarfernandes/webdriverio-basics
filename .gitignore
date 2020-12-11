@@ -3,10 +3,16 @@
 # Logs
 logs
 *.log*
+.DS_Store
+dist
 
 # reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 reports
+allure-report
+
+# error screen shots
+test/error-shots/*
 
 # Runtime data
 pids

@@ -1,4 +1,5 @@
 const { browserName, baseUrl, timeout, logLevel, drivers } = require('./config.settings');
+const allure = require('@wdio/allure-reporter').default;
 
 exports.config = {
     //
@@ -142,22 +143,28 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter.html
-    reporters: ['spec','dot',
-    ['junit', {
-        outputDir: './reports/junit-results/',
-        outputFileFormat: function(options) { // optional
+    reporters: [ 'spec',
+        ['junit', 
+        {
+            outputDir: './test/reports/junit-results',
+            outputFileFormat: function(options) { 
                 return `wdio-junit-${options.cid}.${options.capabilities.browserName}-report.xml`
             }
-    }],['json',{
-        outputDir: './reports/json-results/',
-        outputFileFormat: function(opts) { 
+        }],
+        [ 'json',
+        {
+            outputDir: './test/reports/json-results',
+            outputFileFormat: function(opts) { 
             return `wdio-json-${opts.cid}.${opts.capabilities.browserName}-report.json`
-        }
-    }]
+            }
+        }], 
+        [ 'allure', 
+        {
+            outputDir: './test/reports/allure-results',
+            disableWebdriverStepsReporting: false,
+            disableWebdriverScreenshotsReporting: false
+        }]
     ],
-
-
-    
     
     // =====
     // Hooks
@@ -191,8 +198,15 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {Array.<String>} specs List of spec file paths that are to be run
      */
-    // beforeSession: function (config, capabilities, specs) {
-    // },
+    beforeSession: async function (config, capabilities, specs) {
+        /** 
+         * Delete old reports and screen shots
+        */
+       const del = require('del');
+       //console.log('Deleting reports');
+       const deleted = await del(['test/reports/**/*','test/error-shots/*.png']);
+       //console.log(deleted);
+    },
     /**
      * Gets executed before test execution begins. At this point you can access to all global
      * variables like `browser`. It is the perfect place to define custom commands.
@@ -208,6 +222,11 @@ exports.config = {
         global.expect = chai.expect;
         global.assert = chai.assert;
         global.should = chai.should();
+        /**  
+        *  Setup allure
+        */
+        global.allure = allure;
+        
     },
     /**
      * Runs before a WebdriverIO command gets executed.
@@ -220,13 +239,21 @@ exports.config = {
      * Hook that gets executed before the suite starts
      * @param {Object} suite suite details
      */
-    // beforeSuite: function (suite) {
-    // },
+    beforeSuite: function (suite) {
+        allure.addFeature(suite.name);
+        allure.addDescription("Generating Allure reports for  suite: " + suite.name);
+    },
     /**
      * Function to be executed before a test (in Mocha/Jasmine) starts.
      */
-    // beforeTest: function (test, context) {
-    // },
+    beforeTest: function (test, context) {
+        allure.addEnvironment("BROWSER", browser.capabilities.browserName);
+        allure.addEnvironment("BROWSER_VERSION", browser.capabilities.version);
+        allure.addEnvironment("PLATFORM", browser.capabilities.platform);
+        allure.addDescription("Generating Allure reports for test: " + test.title);
+        allure.addTestId("Test Case Title: " + test.title);
+        allure.addLabel(`Label-${test.title.replace(/[,.;:!\W]/g,"")}- ${(new Date()).toISOString().replace(/[\W]/g,"")}.png`);
+    },
     /**
      * Hook that gets executed _before_ a hook within the suite starts (e.g. runs before calling
      * beforeEach in Mocha)
@@ -242,8 +269,13 @@ exports.config = {
     /**
      * Function to be executed after a test (in Mocha/Jasmine).
      */
-    // afterTest: function(test, context, { error, result, duration, passed, retries }) {
-    // },
+    afterTest: function(test, context, { error, result, duration, passed, retries }) {
+       if (error) {
+            const title = test.title.replace(/[,.!:;\W]/g," ").split(" ").map(word=>`${word.charAt(0).toUpperCase()}${word.substring(1)}`).join('');
+            console.log(title);
+            browser.saveScreenshot(`./test/error-shots/${title}-${(new Date()).toISOString().replace(/[\W]/g,"")}.png`);
+        }
+    },
 
 
     /**
@@ -286,8 +318,9 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {<Object>} results object containing test results
      */
-    // onComplete: function(exitCode, config, capabilities, results) {
-    // },
+    //onComplete: function(exitCode, config, capabilities, results) {   
+//
+  //  },
     /**
     * Gets executed when a refresh happens.
     * @param {String} oldSessionId session ID of the old session
