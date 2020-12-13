@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "allure": "allure serve ./test/reports/allure-results",
-    "junit-report": "junit-viewer --results=./reports/junit-results --save=junit-results.html" ,
+    "junit-report": "junit-viewer --results=./reports/junit-results --save=junit-results.html",
     "test": "./node_modules/.bin/wdio ./test/config/wdio.conf.js",
     "allure-report": "allure generate ./test/reports/allure-results --clean  && allure open"
   },
@@ -44,6 +44,7 @@
     "allure-commandline": "^2.13.0",
     "chai": "^4.2.0",
     "del": "^6.0.0",
+    "html-dnd": "^1.2.1",
     "junit-viewer": "^4.11.1",
     "wdio-json-reporter": "^2.0.0"
   }
